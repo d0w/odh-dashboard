@@ -1,33 +1,38 @@
-import * as path from 'path';
-import * as fs from 'fs';
+import * as path from "path";
+import * as fs from "fs";
 
 // @ts-expect-error: Types are not available for this third-party library
-import registerCypressGrep from '@cypress/grep/src/plugin';
-import { defineConfig } from 'cypress';
-import coverage from '@cypress/code-coverage/task';
+import registerCypressGrep from "@cypress/grep/src/plugin";
+import { defineConfig } from "cypress";
+import coverage from "@cypress/code-coverage/task";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore no types available
-import cypressHighResolution from 'cypress-high-resolution';
+import cypressHighResolution from "cypress-high-resolution";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore no types available
-import { beforeRunHook, afterRunHook } from 'cypress-mochawesome-reporter/lib';
-import { mergeFiles } from 'junit-report-merger';
-import { interceptSnapshotFile } from './cypress/utils/snapshotUtils';
-import { setup as setupWebsockets } from './cypress/support/websockets';
-import { env, cypressEnv, BASE_URL } from './cypress/utils/testConfig';
-import { extractHttpsUrls } from './cypress/utils/urlExtractor';
-import { validateHttpsUrls } from './cypress/utils/urlValidator';
+import { beforeRunHook, afterRunHook } from "cypress-mochawesome-reporter/lib";
+import { mergeFiles } from "junit-report-merger";
+import { interceptSnapshotFile } from "./cypress/utils/snapshotUtils";
+import { setup as setupWebsockets } from "./cypress/support/websockets";
+import { env, cypressEnv, BASE_URL } from "./cypress/utils/testConfig";
+import { extractHttpsUrls } from "./cypress/utils/urlExtractor";
+import { validateHttpsUrls } from "./cypress/utils/urlValidator";
 
-const resultsDir = `${env.CY_RESULTS_DIR || 'results'}/${env.CY_MOCK ? 'mocked' : 'e2e'}`;
+const resultsDir = `${env.CY_RESULTS_DIR || "results"}/${
+  env.CY_MOCK ? "mocked" : "e2e"
+}`;
 
 export default defineConfig({
   experimentalMemoryManagement: true,
+
   // Disable watching only if env variable `CY_WATCH=false`
-  watchForFileChanges: env.CY_WATCH ? env.CY_WATCH !== 'false' : undefined,
+  watchForFileChanges: env.CY_WATCH ? env.CY_WATCH !== "false" : undefined,
+
   // Use relative path as a workaround to https://github.com/cypress-io/cypress/issues/6406
-  reporter: '../../../node_modules/cypress-multi-reporters',
+  reporter: "../../../node_modules/cypress-multi-reporters",
+
   reporterOptions: {
-    reporterEnabled: 'cypress-mochawesome-reporter, mocha-junit-reporter',
+    reporterEnabled: "cypress-mochawesome-reporter, mocha-junit-reporter",
     mochaJunitReporterReporterOptions: {
       mochaFile: `${resultsDir}/junit/junit-[hash].xml`,
     },
@@ -40,6 +45,7 @@ export default defineConfig({
       videoOnFailOnly: true,
     },
   },
+
   chromeWebSecurity: false,
   viewportWidth: 1920,
   viewportHeight: 1080,
@@ -47,6 +53,7 @@ export default defineConfig({
   video: true,
   screenshotsFolder: `${resultsDir}/screenshots`,
   videosFolder: `${resultsDir}/videos`,
+
   env: {
     ...cypressEnv,
     MOCK: !!env.CY_MOCK,
@@ -54,16 +61,19 @@ export default defineConfig({
     WS_PORT: env.CY_WS_PORT,
     coverage: !!env.CY_COVERAGE,
     codeCoverage: {
-      exclude: [path.resolve(__dirname, '../../third_party/**')],
+      exclude: [path.resolve(__dirname, "../../third_party/**")],
     },
     ODH_PRODUCT_NAME: env.ODH_PRODUCT_NAME,
-    resolution: 'high',
+    resolution: "high",
     grepFilterSpecs: true,
   },
+
   defaultCommandTimeout: 10000,
+
   e2e: {
     baseUrl: BASE_URL,
-    userAgent: 'Mozilla/5.0 (X11; Linux x86_64; rv:128.0) Gecko/20100101 Firefox/128.0',
+    userAgent:
+      "Mozilla/5.0 (X11; Linux x86_64; rv:128.0) Gecko/20100101 Firefox/128.0",
     specPattern: env.CY_MOCK
       ? `cypress/tests/mocked/**/*.cy.ts`
       : env.CY_RECORD
@@ -76,12 +86,14 @@ export default defineConfig({
       coverage(on, config);
       setupWebsockets(on, config);
 
-      on('task', {
+      on("task", {
         readJSON(filePath: string) {
           const absPath = path.resolve(__dirname, filePath);
           if (fs.existsSync(absPath)) {
             try {
-              return Promise.resolve(JSON.parse(fs.readFileSync(absPath, 'utf8')));
+              return Promise.resolve(
+                JSON.parse(fs.readFileSync(absPath, "utf8"))
+              );
             } catch {
               // return default value
             }
@@ -113,7 +125,7 @@ export default defineConfig({
       });
 
       if (env.CY_RECORD) {
-        on('before:spec', (spec) => {
+        on("before:spec", (spec) => {
           // delete previous snapshots for the spec
           try {
             fs.unlinkSync(interceptSnapshotFile(spec.absolute));
@@ -124,11 +136,11 @@ export default defineConfig({
       }
 
       // Delete videos for specs without failing or retried tests
-      on('after:spec', (_, results) => {
+      on("after:spec", (_, results) => {
         if (results.video) {
           // Do we have failures for any retry attempts?
           const failures = results.tests.some((test) =>
-            test.attempts.some((attempt) => attempt.state === 'failed'),
+            test.attempts.some((attempt) => attempt.state === "failed")
           );
           if (!failures) {
             // delete the video if the spec passed and no tests retried
@@ -137,17 +149,17 @@ export default defineConfig({
         }
       });
 
-      on('before:run', async (details) => {
+      on("before:run", async (details) => {
         // cypress-mochawesome-reporter
         await beforeRunHook(details);
       });
 
-      on('after:run', async () => {
+      on("after:run", async () => {
         // cypress-mochawesome-reporter
         await afterRunHook();
 
         // merge junit reports into a single report
-        const outputFile = path.join(__dirname, resultsDir, 'junit-report.xml');
+        const outputFile = path.join(__dirname, resultsDir, "junit-report.xml");
         const inputFiles = [`./${resultsDir}/junit/*.xml`];
         await mergeFiles(outputFile, inputFiles);
       });
@@ -155,8 +167,18 @@ export default defineConfig({
       // Apply retries only for tests in the "e2e" folder
       return {
         ...config,
-        retries: !env.CY_MOCK && !env.CY_RECORD ? { runMode: 2, openMode: 0 } : config.retries,
+        retries:
+          !env.CY_MOCK && !env.CY_RECORD
+            ? { runMode: 2, openMode: 0 }
+            : config.retries,
       };
+    },
+  },
+
+  component: {
+    devServer: {
+      framework: "react",
+      bundler: "webpack",
     },
   },
 });

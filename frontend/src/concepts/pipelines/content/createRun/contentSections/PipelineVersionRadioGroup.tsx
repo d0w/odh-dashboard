@@ -124,6 +124,7 @@ const PipelineVersionRadioGroup: React.FC<PipelineVersionRadioGroupProps> = ({
                           refreshAllAPI();
                         }
                       }}
+                      redirectAfterImport={false}
                     />
                   )}
                 </>
