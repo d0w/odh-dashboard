@@ -196,7 +196,7 @@ describe('Create, Delete and Edit - Workbench Tests', () => {
       deleteModal.shouldBeOpen();
       deleteModal.findInput().type(pvcStorageName);
       deleteModal.findSubmitButton().should('be.enabled').click();
-      clusterStorage.findEmptyState().should('exist');
+      clusterStorage.findEmptyState().should('exist', { timeout: 30000 });
     },
   );
 });
