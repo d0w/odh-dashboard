@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/opendatahub-io/mod-arch-library/bff/internal/integrations/agents"
+	"github.com/opendatahub-io/agent-ops/internal/integrations/agents"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 )
 

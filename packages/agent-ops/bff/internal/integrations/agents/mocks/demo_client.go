@@ -1,7 +1,7 @@
 package mocks
 
 import (
-	"github.com/opendatahub-io/mod-arch-library/bff/internal/integrations/agents"
+	"github.com/opendatahub-io/agent-ops/internal/integrations/agents"
 )
 
 // NewDemoClient returns a mock client preloaded with sample agent data for local dev and tests.

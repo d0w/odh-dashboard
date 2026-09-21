@@ -3,10 +3,10 @@ package api
 import (
 	"log/slog"
 
-	"github.com/opendatahub-io/mod-arch-library/bff/internal/config"
-	agentsmock "github.com/opendatahub-io/mod-arch-library/bff/internal/integrations/agents/mocks"
-	k8s "github.com/opendatahub-io/mod-arch-library/bff/internal/integrations/kubernetes"
-	"github.com/opendatahub-io/mod-arch-library/bff/internal/repositories"
+	"github.com/opendatahub-io/agent-ops/internal/config"
+	agentsmock "github.com/opendatahub-io/agent-ops/internal/integrations/agents/mocks"
+	k8s "github.com/opendatahub-io/agent-ops/internal/integrations/kubernetes"
+	"github.com/opendatahub-io/agent-ops/internal/repositories"
 )
 
 // TestAppOption configures a test App created by NewTestApp.

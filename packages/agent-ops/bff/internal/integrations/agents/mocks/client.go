@@ -6,7 +6,7 @@ import (
 	"maps"
 	"sync"
 
-	"github.com/opendatahub-io/mod-arch-library/bff/internal/integrations/agents"
+	"github.com/opendatahub-io/agent-ops/internal/integrations/agents"
 )
 
 // Client is an in-memory agents.Client for unit tests and local development.

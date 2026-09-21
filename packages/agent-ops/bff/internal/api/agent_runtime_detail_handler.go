@@ -6,8 +6,8 @@ import (
 	"net/http"
 
 	"github.com/julienschmidt/httprouter"
-	helper "github.com/opendatahub-io/mod-arch-library/bff/internal/helpers"
-	"github.com/opendatahub-io/mod-arch-library/bff/internal/models"
+	helper "github.com/opendatahub-io/agent-ops/internal/helpers"
+	"github.com/opendatahub-io/agent-ops/internal/models"
 )
 
 type AgentRuntimeDetailEnvelope Envelope[*models.AgentRuntimeDetail, None]

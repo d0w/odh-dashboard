@@ -1,7 +1,7 @@
 package kubernetes
 
 import (
-	"github.com/opendatahub-io/mod-arch-library/bff/internal/integrations/agents"
+	"github.com/opendatahub-io/agent-ops/internal/integrations/agents"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 )
 

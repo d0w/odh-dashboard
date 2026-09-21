@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"regexp"
 
-	bfferrors "github.com/opendatahub-io/mod-arch-library/bff/internal/errors"
+	bfferrors "github.com/opendatahub-io/agent-ops/internal/errors"
 )
 
 var dns1123LabelRegex = regexp.MustCompile(`^[a-z0-9]([-a-z0-9]*[a-z0-9])?$`)

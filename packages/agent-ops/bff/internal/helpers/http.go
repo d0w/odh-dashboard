@@ -1,4 +1,4 @@
-package api
+package helpers
 
 import (
 	"encoding/json"
@@ -16,7 +16,7 @@ type Envelope[D any, M any] struct {
 
 type None *struct{}
 
-func (app *App) WriteJSON(w http.ResponseWriter, status int, data any, headers http.Header) error {
+func WriteJSON(w http.ResponseWriter, status int, data any, headers http.Header) error {
 	js, err := json.MarshalIndent(data, "", "\t")
 	if err != nil {
 		return err
@@ -38,7 +38,7 @@ func (app *App) WriteJSON(w http.ResponseWriter, status int, data any, headers h
 	return nil
 }
 
-func (app *App) ReadJSON(w http.ResponseWriter, r *http.Request, dst any) error {
+func ReadJSON(w http.ResponseWriter, r *http.Request, dst any) error {
 	maxBytes := 1_048_576
 	r.Body = http.MaxBytesReader(w, r.Body, int64(maxBytes))
 

@@ -8,8 +8,8 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/opendatahub-io/mod-arch-library/bff/internal/config"
-	"github.com/opendatahub-io/mod-arch-library/bff/internal/constants"
+	"github.com/opendatahub-io/agent-ops/internal/config"
+	"github.com/opendatahub-io/agent-ops/internal/constants"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
 )

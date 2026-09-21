@@ -5,8 +5,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/opendatahub-io/mod-arch-library/bff/internal/integrations/agents"
-	"github.com/opendatahub-io/mod-arch-library/bff/internal/mapper"
+	"github.com/opendatahub-io/agent-ops/internal/integrations/agents"
+	"github.com/opendatahub-io/agent-ops/internal/mapper"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"

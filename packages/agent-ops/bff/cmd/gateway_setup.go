@@ -1,12 +1,14 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log/slog"
 	"os"
 	"strings"
 
 	openshell "github.com/NVIDIA/OpenShell/sdk/go/openshell/v1"
+	"github.com/opendatahub-io/agent-ops/pkg/fleet"
 
 	"github.com/Gkrumbach07/openshell-dashboard/backend/pkg/clients"
 )
@@ -32,6 +34,14 @@ func (c *gatewayClients) Close() {
 			slog.Warn("upload exec client close failed", "error", err)
 		}
 	}
+}
+
+func gatewayInstanceFactory(ctx context.Context, cfg fleet.GatewayConfig) (fleet.GatewayInstance, error) {
+	return fleet.GatewayInstance{
+		Close: func() error {
+			return nil
+		},
+	}, nil
 }
 
 func newGatewayClients(gatewayURL, gatewayCACert, gatewayClientCert, gatewayClientKey string) (*gatewayClients, error) {

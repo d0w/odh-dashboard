@@ -11,20 +11,20 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/opendatahub-io/mod-arch-library/bff/internal/integrations/agents"
-	agentsk8s "github.com/opendatahub-io/mod-arch-library/bff/internal/integrations/agents/kubernetes"
-	agentsmock "github.com/opendatahub-io/mod-arch-library/bff/internal/integrations/agents/mocks"
-	"github.com/opendatahub-io/mod-arch-library/bff/internal/integrations/bffclient"
-	"github.com/opendatahub-io/mod-arch-library/bff/internal/integrations/bffclient/bffmocks"
-	k8s "github.com/opendatahub-io/mod-arch-library/bff/internal/integrations/kubernetes"
-	k8mocks "github.com/opendatahub-io/mod-arch-library/bff/internal/integrations/kubernetes/k8mocks"
+	"github.com/opendatahub-io/agent-ops/internal/integrations/agents"
+	agentsk8s "github.com/opendatahub-io/agent-ops/internal/integrations/agents/kubernetes"
+	agentsmock "github.com/opendatahub-io/agent-ops/internal/integrations/agents/mocks"
+	"github.com/opendatahub-io/agent-ops/internal/integrations/bffclient"
+	"github.com/opendatahub-io/agent-ops/internal/integrations/bffclient/bffmocks"
+	k8s "github.com/opendatahub-io/agent-ops/internal/integrations/kubernetes"
+	k8mocks "github.com/opendatahub-io/agent-ops/internal/integrations/kubernetes/k8mocks"
 	"k8s.io/client-go/kubernetes"
 	"sigs.k8s.io/controller-runtime/pkg/envtest"
 
-	helper "github.com/opendatahub-io/mod-arch-library/bff/internal/helpers"
+	helper "github.com/opendatahub-io/agent-ops/internal/helpers"
 
-	"github.com/opendatahub-io/mod-arch-library/bff/internal/config"
-	"github.com/opendatahub-io/mod-arch-library/bff/internal/repositories"
+	"github.com/opendatahub-io/agent-ops/internal/config"
+	"github.com/opendatahub-io/agent-ops/internal/repositories"
 
 	"github.com/julienschmidt/httprouter"
 )

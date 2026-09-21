@@ -7,7 +7,7 @@ import (
 	"log/slog"
 	"sync"
 
-	"github.com/opendatahub-io/mod-arch-library/bff/internal/integrations/bffclient"
+	"github.com/opendatahub-io/agent-ops/internal/integrations/bffclient"
 )
 
 // MockBFFClient provides a mock implementation of the BFFClientInterface for testing

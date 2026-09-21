@@ -4,18 +4,22 @@ import (
 	"context"
 	"flag"
 	"fmt"
-	"os/signal"
-	"syscall"
-
-	"github.com/opendatahub-io/mod-arch-library/bff/internal/api"
-	"github.com/opendatahub-io/mod-arch-library/bff/internal/config"
-	tlsprofile "github.com/opendatahub-io/odh-dashboard/pkg/tls"
-
 	"log/slog"
 	"net/http"
 	"os"
+	"os/signal"
+	"syscall"
 	"time"
+
+	"github.com/go-chi/chi"
+	"github.com/go-chi/chi/middleware"
+	"github.com/opendatahub-io/agent-ops/internal/config"
+	"github.com/opendatahub-io/agent-ops/internal/helpers"
+	"github.com/opendatahub-io/agent-ops/pkg/fleet"
+	tlsprofile "github.com/opendatahub-io/odh-dashboard/pkg/tls"
 )
+
+const fleetRouterPrefix = "/agent-ops/api/openshell/{id}"
 
 func main() {
 	var cfg config.EnvConfig
@@ -75,7 +79,7 @@ func main() {
 		Level: cfg.LogLevel,
 	}))
 
-	//validate auth method
+	// validate auth method
 	if cfg.AuthMethod != config.AuthMethodInternal &&
 		cfg.AuthMethod != config.AuthMethodUser &&
 		cfg.AuthMethod != config.AuthMethodDisabled {
@@ -89,15 +93,31 @@ func main() {
 	// Only use for logging errors about logging configuration.
 	slog.SetDefault(logger)
 
-	app, err := api.NewApp(cfg, slog.New(logger.Handler()))
+	fleetRegistry := fleet.NewRegistry(gatewayInstanceFactory)
+	fleetHandler, err := fleet.NewRouter(fleetRouterPrefix, fleetRegistry)
 	if err != nil {
-		logger.Error(err.Error())
+		logger.Error("Unable to create fleet router", err.Error())
 		os.Exit(1)
 	}
 
+	// TODO: Move out of file and write custom middleware using slog defined above
+	router := chi.NewRouter()
+	router.Use(middleware.Logger)
+	router.Get("/agent-ops/api/openshell/gateways", func(w http.ResponseWriter, r *http.Request) {
+		// list gateways
+		if err := helpers.WriteJSON(w, http.StatusOK, "hello", nil); err != nil {
+			logger.Error("Failed to write JSON response",
+				slog.String("method", r.Method),
+				slog.String("path", r.URL.Path),
+				slog.Int("status", http.StatusOK),
+				slog.Any("error", err))
+		}
+	})
+	router.Mount(fleetRouterPrefix, fleetHandler)
+
 	srv := &http.Server{
 		Addr:         fmt.Sprintf(":%d", cfg.Port),
-		Handler:      app.Routes(),
+		Handler:      router,
 		IdleTimeout:  time.Minute,
 		ReadTimeout:  30 * time.Second,
 		WriteTimeout: 30 * time.Second,
@@ -145,7 +165,7 @@ func main() {
 	}
 
 	// Shutdown the App gracefully
-	if err := app.Shutdown(); err != nil {
+	if err := fleetRegistry.Close(ctx); err != nil {
 		logger.Error("failed to shutdown Kubernetes manager", "error", err)
 	}
 

@@ -6,9 +6,9 @@ import (
 	"fmt"
 	"log/slog"
 
-	"github.com/opendatahub-io/mod-arch-library/bff/internal/constants"
-	"github.com/opendatahub-io/mod-arch-library/bff/internal/integrations/agents"
-	k8s "github.com/opendatahub-io/mod-arch-library/bff/internal/integrations/kubernetes"
+	"github.com/opendatahub-io/agent-ops/internal/constants"
+	"github.com/opendatahub-io/agent-ops/internal/integrations/agents"
+	k8s "github.com/opendatahub-io/agent-ops/internal/integrations/kubernetes"
 	corev1 "k8s.io/api/core/v1"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/api/meta"
