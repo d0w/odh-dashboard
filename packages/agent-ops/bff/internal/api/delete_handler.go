@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"github.com/julienschmidt/httprouter"
-	helper "github.com/opendatahub-io/mod-arch-library/bff/internal/helpers"
+	helper "github.com/opendatahub-io/agent-ops/internal/helpers"
 )
 
 func (app *App) DeleteAgentHandler(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {

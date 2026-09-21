@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"log/slog"
 
-	"github.com/opendatahub-io/mod-arch-library/bff/internal/integrations/agents"
-	k8s "github.com/opendatahub-io/mod-arch-library/bff/internal/integrations/kubernetes"
+	"github.com/opendatahub-io/agent-ops/internal/integrations/agents"
+	k8s "github.com/opendatahub-io/agent-ops/internal/integrations/kubernetes"
 )
 
 // Factory creates Kubernetes-backed agents.Client instances per request.

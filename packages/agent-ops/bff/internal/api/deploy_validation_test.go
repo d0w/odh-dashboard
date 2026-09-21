@@ -3,7 +3,7 @@ package api
 import (
 	"testing"
 
-	"github.com/opendatahub-io/mod-arch-library/bff/internal/models"
+	"github.com/opendatahub-io/agent-ops/internal/models"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

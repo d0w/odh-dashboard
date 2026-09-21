@@ -8,9 +8,9 @@ import (
 	"strconv"
 
 	"github.com/julienschmidt/httprouter"
-	helper "github.com/opendatahub-io/mod-arch-library/bff/internal/helpers"
-	"github.com/opendatahub-io/mod-arch-library/bff/internal/models"
-	"github.com/opendatahub-io/mod-arch-library/bff/internal/repositories"
+	helper "github.com/opendatahub-io/agent-ops/internal/helpers"
+	"github.com/opendatahub-io/agent-ops/internal/models"
+	"github.com/opendatahub-io/agent-ops/internal/repositories"
 )
 
 type AgentRuntimesEnvelope Envelope[*models.AgentRuntimesResponse, None]

@@ -9,9 +9,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/opendatahub-io/mod-arch-library/bff/internal/integrations/agents"
-	k8s "github.com/opendatahub-io/mod-arch-library/bff/internal/integrations/kubernetes"
-	"github.com/opendatahub-io/mod-arch-library/bff/internal/mapper"
+	"github.com/opendatahub-io/agent-ops/internal/integrations/agents"
+	k8s "github.com/opendatahub-io/agent-ops/internal/integrations/kubernetes"
+	"github.com/opendatahub-io/agent-ops/internal/mapper"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	corev1 "k8s.io/api/core/v1"

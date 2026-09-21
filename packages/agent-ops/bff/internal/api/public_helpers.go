@@ -6,10 +6,10 @@ import (
 	"net/http"
 
 	"github.com/julienschmidt/httprouter"
-	"github.com/opendatahub-io/mod-arch-library/bff/internal/config"
-	"github.com/opendatahub-io/mod-arch-library/bff/internal/integrations/bffclient"
-	k8s "github.com/opendatahub-io/mod-arch-library/bff/internal/integrations/kubernetes"
-	"github.com/opendatahub-io/mod-arch-library/bff/internal/repositories"
+	"github.com/opendatahub-io/agent-ops/internal/config"
+	"github.com/opendatahub-io/agent-ops/internal/integrations/bffclient"
+	k8s "github.com/opendatahub-io/agent-ops/internal/integrations/kubernetes"
+	"github.com/opendatahub-io/agent-ops/internal/repositories"
 )
 
 // BadRequest sends a 400 Bad Request response with the given error message.

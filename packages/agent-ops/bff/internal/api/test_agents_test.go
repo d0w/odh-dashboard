@@ -1,8 +1,8 @@
 package api
 
 import (
-	agentsmock "github.com/opendatahub-io/mod-arch-library/bff/internal/integrations/agents/mocks"
-	"github.com/opendatahub-io/mod-arch-library/bff/internal/repositories"
+	agentsmock "github.com/opendatahub-io/agent-ops/internal/integrations/agents/mocks"
+	"github.com/opendatahub-io/agent-ops/internal/repositories"
 )
 
 func testRepositoriesWithAgents() *repositories.Repositories {

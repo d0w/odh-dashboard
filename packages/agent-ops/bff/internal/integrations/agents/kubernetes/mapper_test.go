@@ -3,8 +3,8 @@ package kubernetes
 import (
 	"testing"
 
-	"github.com/opendatahub-io/mod-arch-library/bff/internal/integrations/agents"
-	"github.com/opendatahub-io/mod-arch-library/bff/internal/mapper"
+	"github.com/opendatahub-io/agent-ops/internal/integrations/agents"
+	"github.com/opendatahub-io/agent-ops/internal/mapper"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"

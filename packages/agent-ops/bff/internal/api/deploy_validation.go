@@ -5,8 +5,8 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/opendatahub-io/mod-arch-library/bff/internal/integrations/agents"
-	"github.com/opendatahub-io/mod-arch-library/bff/internal/models"
+	"github.com/opendatahub-io/agent-ops/internal/integrations/agents"
+	"github.com/opendatahub-io/agent-ops/internal/models"
 )
 
 var envVarNameRegex = regexp.MustCompile(`^[A-Za-z_][A-Za-z0-9_]*$`)

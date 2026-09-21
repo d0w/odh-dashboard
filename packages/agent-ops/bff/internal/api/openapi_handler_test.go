@@ -11,7 +11,7 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/opendatahub-io/mod-arch-library/bff/internal/config"
+	"github.com/opendatahub-io/agent-ops/internal/config"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

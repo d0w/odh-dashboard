@@ -5,7 +5,7 @@ import (
 	"log/slog"
 	"strings"
 
-	"github.com/opendatahub-io/mod-arch-library/bff/internal/integrations/agents"
+	"github.com/opendatahub-io/agent-ops/internal/integrations/agents"
 )
 
 func (c *Client) enrichAgentCard(ctx context.Context, namespace, name string, detail *agents.AgentDetail) {

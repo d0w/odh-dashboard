@@ -10,8 +10,8 @@ import (
 	"testing"
 
 	"github.com/julienschmidt/httprouter"
-	"github.com/opendatahub-io/mod-arch-library/bff/internal/config"
-	"github.com/opendatahub-io/mod-arch-library/bff/internal/models"
+	"github.com/opendatahub-io/agent-ops/internal/config"
+	"github.com/opendatahub-io/agent-ops/internal/models"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

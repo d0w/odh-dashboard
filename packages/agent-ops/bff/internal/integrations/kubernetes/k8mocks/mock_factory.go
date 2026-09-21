@@ -7,9 +7,9 @@ import (
 	"net/http"
 	"sync"
 
-	"github.com/opendatahub-io/mod-arch-library/bff/internal/config"
-	"github.com/opendatahub-io/mod-arch-library/bff/internal/constants"
-	k8s "github.com/opendatahub-io/mod-arch-library/bff/internal/integrations/kubernetes"
+	"github.com/opendatahub-io/agent-ops/internal/config"
+	"github.com/opendatahub-io/agent-ops/internal/constants"
+	k8s "github.com/opendatahub-io/agent-ops/internal/integrations/kubernetes"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
 	"sigs.k8s.io/controller-runtime/pkg/envtest"

@@ -10,7 +10,7 @@ import (
 	"strconv"
 
 	"github.com/google/uuid"
-	helper "github.com/opendatahub-io/mod-arch-library/bff/internal/helpers"
+	helper "github.com/opendatahub-io/agent-ops/internal/helpers"
 )
 
 type HTTPClientInterface interface {

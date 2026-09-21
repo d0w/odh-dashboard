@@ -6,8 +6,8 @@ import (
 	"log/slog"
 	"testing"
 
-	"github.com/opendatahub-io/mod-arch-library/bff/internal/constants"
-	k8s "github.com/opendatahub-io/mod-arch-library/bff/internal/integrations/kubernetes"
+	"github.com/opendatahub-io/agent-ops/internal/constants"
+	k8s "github.com/opendatahub-io/agent-ops/internal/integrations/kubernetes"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

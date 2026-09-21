@@ -10,10 +10,10 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/julienschmidt/httprouter"
-	"github.com/opendatahub-io/mod-arch-library/bff/internal/config"
-	"github.com/opendatahub-io/mod-arch-library/bff/internal/constants"
-	helper "github.com/opendatahub-io/mod-arch-library/bff/internal/helpers"
-	k8s "github.com/opendatahub-io/mod-arch-library/bff/internal/integrations/kubernetes"
+	"github.com/opendatahub-io/agent-ops/internal/config"
+	"github.com/opendatahub-io/agent-ops/internal/constants"
+	helper "github.com/opendatahub-io/agent-ops/internal/helpers"
+	k8s "github.com/opendatahub-io/agent-ops/internal/integrations/kubernetes"
 	"github.com/rs/cors"
 )
 
