@@ -29,12 +29,15 @@ func PollGateways(ctx context.Context, gatewayRegistry fleet.Registry, interval 
 			// find gateways
 			tempAddGateway(ctx, gatewayRegistry, fleet.GatewayConfig{
 				ID:       "derxu-openshell",
-				Endpoint: "https://localhost:8080",
+				Endpoint: "grpcs://localhost:8080",
+				// wed have to assume we get this somehow from a sidecar/operator and it gets mounted to the container
+				GatewayCaCert: "/Users/derxu/.config/openshell/gateways/derxu-cluster/mtls/ca.crt",
 			})
 
 			tempAddGateway(ctx, gatewayRegistry, fleet.GatewayConfig{
-				ID:       "openshell-2",
-				Endpoint: "http://localhost:4000",
+				ID:            "openshell-2",
+				Endpoint:      "grpcs://localhost:8081",
+				GatewayCaCert: "/Users/derxu/.config/openshell/gateways/openshell-2/mtls/ca.crt",
 			})
 		}
 	}

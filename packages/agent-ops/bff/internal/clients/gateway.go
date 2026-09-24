@@ -53,8 +53,8 @@ func NewGatewayClients(gatewayURL, caCert, clientCert, clientKey string) (*Gatew
 
 	cfg := openshell.Config{
 		Address: address,
-		// Auth:    clients.ContextAuthProvider{RequireTLS: useTLS},
-		Auth: openshell.NoAuth(),
+		Auth:    clients.ContextAuthProvider{RequireTLS: useTLS},
+		// Auth: openshell.NoAuth(),
 	}
 	if useTLS {
 		tlsCfg := &openshell.TLSConfig{CAFile: caCert}

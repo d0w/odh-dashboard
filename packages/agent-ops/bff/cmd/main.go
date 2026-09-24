@@ -15,11 +15,12 @@ import (
 	"github.com/go-chi/chi/middleware"
 	"github.com/opendatahub-io/agent-ops/internal/config"
 	"github.com/opendatahub-io/agent-ops/internal/helpers"
+	"github.com/opendatahub-io/agent-ops/pkg/discovery"
 	"github.com/opendatahub-io/agent-ops/pkg/fleet"
 	tlsprofile "github.com/opendatahub-io/odh-dashboard/pkg/tls"
 )
 
-const fleetRouterPrefix = "/agent-ops/api/openshell/{id}"
+const fleetRouterPrefix = "/agent-ops/api/openshell"
 
 func main() {
 	var cfg config.EnvConfig
@@ -147,6 +148,10 @@ func main() {
 		}
 	}()
 
+	// gateway discovery service
+	svcCtx, svcCancel := context.WithCancel(context.Background())
+	go discovery.PollGateways(svcCtx, fleetRegistry, 2*time.Second)
+
 	// Graceful shutdown setup
 	shutdownCh := make(chan os.Signal, 1)
 	signal.Notify(shutdownCh, os.Interrupt, syscall.SIGINT, syscall.SIGTERM, syscall.SIGHUP)
@@ -154,6 +159,8 @@ func main() {
 	// Wait for shutdown signal
 	<-shutdownCh
 	logger.Info("shutting down gracefully...")
+
+	svcCancel()
 
 	// Create a context with timeout for the shutdown process
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
@@ -163,7 +170,6 @@ func main() {
 	if err := srv.Shutdown(ctx); err != nil {
 		logger.Error("server shutdown failed", "error", err)
 	}
-
 	// Shutdown the App gracefully
 	if err := fleetRegistry.Close(ctx); err != nil {
 		logger.Error("failed to shutdown Kubernetes manager", "error", err)

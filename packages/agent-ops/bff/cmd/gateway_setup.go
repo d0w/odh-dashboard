@@ -8,9 +8,13 @@ import (
 	"strings"
 
 	openshell "github.com/NVIDIA/OpenShell/sdk/go/openshell/v1"
+	testclients "github.com/opendatahub-io/agent-ops/internal/clients"
 	"github.com/opendatahub-io/agent-ops/pkg/fleet"
 
+	openshellauth "github.com/Gkrumbach07/openshell-dashboard/backend/pkg/auth"
 	"github.com/Gkrumbach07/openshell-dashboard/backend/pkg/clients"
+	openshellmodels "github.com/Gkrumbach07/openshell-dashboard/backend/pkg/models"
+	openshellapi "github.com/Gkrumbach07/openshell-dashboard/backend/pkg/server"
 )
 
 const (
@@ -36,69 +40,57 @@ func (c *gatewayClients) Close() {
 	}
 }
 
+func embeddedFeatureFlags() openshellmodels.FeatureFlags {
+	flags := openshellmodels.FeatureFlags{
+		Terminal:          true,
+		FileTransfer:      true,
+		Settings:          true,
+		GlobalPolicy:      true,
+		CredentialRefresh: true,
+		Services:          true,
+		DraftPolicy:       true,
+	}
+	// for _, name := range embeddedUnsupportedFeatures {
+	// 	if name == "terminal" {
+	// 		flags.Terminal = false
+	// 	}
+	// }
+	return flags
+}
+
 func gatewayInstanceFactory(ctx context.Context, cfg fleet.GatewayConfig) (fleet.GatewayInstance, error) {
+	appClients, err := testclients.NewGatewayClients(
+		cfg.Endpoint,
+		// TODO: Make based on factory inputs
+		cfg.GatewayCaCert,
+		// "/Users/derxu/.config/openshell/gateways/derxu-cluster/mtls/tls.crt",
+		"",
+		// "/Users/derxu/.config/openshell/gateways/derxu-cluster/mtls/tls.key",
+		"",
+	)
+	if err != nil {
+		return fleet.GatewayInstance{Handler: nil, Close: nil}, err
+	}
+	app := openshellapi.NewApp(
+		appClients.SDK,
+		appClients.UploadExec,
+		openshellauth.New(openshellauth.Config{}),
+		"",
+		// TODO: remove statics
+		openshellmodels.AuthConfigResponse{
+			AdminRole:    "openshell-admin",
+			LogoutURL:    "",
+			Features:     embeddedFeatureFlags(),
+			AuthDisabled: false,
+		},
+	)
+	slog.Info(fmt.Sprintf("Created factory instance: %s", cfg.ID))
 	return fleet.GatewayInstance{
 		Close: func() error {
 			return nil
 		},
+		Handler: app.Routes(),
 	}, nil
-}
-
-func newGatewayClients(gatewayURL, gatewayCACert, gatewayClientCert, gatewayClientKey string) (*gatewayClients, error) {
-	useTLS := strings.HasPrefix(gatewayURL, "grpcs://") || strings.HasPrefix(gatewayURL, "https://")
-	sdkAddress := normalizeGatewayAddress(gatewayURL, useTLS)
-
-	if (gatewayClientCert == "") != (gatewayClientKey == "") {
-		return nil, fmt.Errorf("gateway mTLS requires both --gateway-client-cert and --gateway-client-key")
-	}
-
-	sdkCfg := openshell.Config{
-		Address: sdkAddress,
-		Auth:    clients.ContextAuthProvider{RequireTLS: useTLS},
-	}
-	if useTLS {
-		tlsCfg := &openshell.TLSConfig{CAFile: gatewayCACert}
-		if gatewayClientCert != "" {
-			tlsCfg.CertFile = gatewayClientCert
-			tlsCfg.KeyFile = gatewayClientKey
-		}
-		sdkCfg.TLS = tlsCfg
-	} else {
-		sdkCfg.TLS = &openshell.TLSConfig{Insecure: true}
-	}
-
-	openshell, err := openshell.NewClient(sdkCfg)
-	if err != nil {
-		return nil, fmt.Errorf("SDK client setup failed: %w", err)
-	}
-
-	rawHost := strings.TrimPrefix(strings.TrimPrefix(sdkAddress, "https://"), "http://")
-	uploadExec, err := clients.NewRawExecClient(rawHost, gatewayCACert, gatewayClientCert, gatewayClientKey, useTLS)
-	if err != nil {
-		if closeErr := openshell.Close(); closeErr != nil {
-			slog.Warn("SDK client close failed during setup rollback", "error", closeErr)
-		}
-		return nil, fmt.Errorf("upload exec client setup failed: %w", err)
-	}
-
-	return &gatewayClients{sdk: openshell, uploadExec: uploadExec}, nil
-}
-
-func normalizeGatewayAddress(gatewayURL string, useTLS bool) string {
-	switch {
-	case strings.HasPrefix(gatewayURL, "grpcs://"):
-		return "https://" + strings.TrimPrefix(gatewayURL, "grpcs://")
-	case strings.HasPrefix(gatewayURL, "grpc://"):
-		return "http://" + strings.TrimPrefix(gatewayURL, "grpc://")
-	case strings.HasPrefix(gatewayURL, "https://"), strings.HasPrefix(gatewayURL, "http://"):
-		return gatewayURL
-	default:
-		scheme := "http"
-		if useTLS {
-			scheme = "https"
-		}
-		return fmt.Sprintf("%s://%s", scheme, gatewayURL)
-	}
 }
 
 func warnGatewayConfig(gatewayURL, gatewayCACert string, authDisabled bool) {

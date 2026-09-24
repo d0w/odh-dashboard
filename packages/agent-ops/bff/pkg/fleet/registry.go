@@ -9,12 +9,13 @@ import (
 )
 
 type GatewayConfig struct {
-	ID       string
-	Endpoint string
+	ID            string
+	Endpoint      string
+	GatewayCaCert string
 }
 
 type GatewayInstance struct {
-	handler http.Handler
+	Handler http.Handler
 	Close   func() error
 }
 
@@ -86,12 +87,14 @@ func (r *GatewayRegistry) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	// 	// return http error
 	// 	return
 	// }
+	fmt.Printf("%#v\n", r.entries)
 
 	gatewayInstance, ok := r.entries[id]
 	if !ok {
 		w.Write([]byte("Instance does not exist"))
 		return
 	}
+	fmt.Printf("%#v\n", gatewayInstance)
 
 	// clones request
 	// alter headers, auth, etc. here...
@@ -99,7 +102,7 @@ func (r *GatewayRegistry) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	upstreamReq.URL.Path = upstreamPath
 	upstreamReq.URL.RawPath = upstreamRawPath
 	upstreamReq.RequestURI = upstreamReq.URL.RequestURI()
-	gatewayInstance.handler.ServeHTTP(w, upstreamReq)
+	gatewayInstance.Handler.ServeHTTP(w, upstreamReq)
 }
 
 func (r *GatewayRegistry) Close(ctx context.Context) error {
