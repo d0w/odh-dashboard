@@ -1,11 +1,11 @@
-github.com/NVIDIA/OpenShell/sdk/go v0.0.0-20260910203850-90dbe5454bb8 h1:G4Ihi7okqbAq5r/R4vOWL9VmAiRijSa00/4jVHxhTQY=
-github.com/NVIDIA/OpenShell/sdk/go v0.0.0-20260910203850-90dbe5454bb8/go.mod h1:+wnjuZwBJH2yz8cU1t7FiGK7xPQyxjOY3YZNFcfpL90=
+github.com/Gkrumbach07/openshell-dashboard/backend v0.0.0-20260923225712-71335e5d091e h1:3QLIK43h8tH553ZAh8PxmjLm+kwljOih9cPdX7FDPiY=
+github.com/Gkrumbach07/openshell-dashboard/backend v0.0.0-20260923225712-71335e5d091e/go.mod h1:OOC+HuZwD+L7+zz85faPQFyc2hQpkz/TRyw/3p1V7rA=
+github.com/NVIDIA/OpenShell/sdk/go v0.0.0-20260923091534-d3480d2a7efa h1:ZfPxkQ+FJ6NojtiBov5BV2hhJzYefQCJ6+E1Y5UA9oM=
+github.com/NVIDIA/OpenShell/sdk/go v0.0.0-20260923091534-d3480d2a7efa/go.mod h1:+wnjuZwBJH2yz8cU1t7FiGK7xPQyxjOY3YZNFcfpL90=
 github.com/beorn7/perks v1.0.1 h1:VlbKKnNfV8bJzeqoa4cOKqO6bYr3WgKZxO8Z16+hsOM=
 github.com/beorn7/perks v1.0.1/go.mod h1:G2ZrVWU2WbWT9wwq4/hrbKbnv/1ERSJQ0ibhJ6rlkpw=
 github.com/cespare/xxhash/v2 v2.3.0 h1:UL815xU9SqsFlibzuggzjXhog7bL6oX9BbNZnL2UFvs=
 github.com/cespare/xxhash/v2 v2.3.0/go.mod h1:VGX0DQ3Q6kWi7AoAeZDth3/j3BFtOZR5XLFGgcrjCOs=
-github.com/d0w/openshell-dashboard/backend v0.0.0-20260921141023-113961fac55c h1:iwoy23sVtodz0eDJm9gh+UyE0gtMRQe7lcEipRp6yTo=
-github.com/d0w/openshell-dashboard/backend v0.0.0-20260921141023-113961fac55c/go.mod h1:fJfYSbe7soRgvEaJV6DFlASMOhKI9HOg/XmmzmVjieE=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc h1:U9qPSI2PIWSS1VwoXQT9A3Wy9MM3WgvqSxFWenqJduM=

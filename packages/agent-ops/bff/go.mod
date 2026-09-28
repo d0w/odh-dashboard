@@ -3,8 +3,8 @@ module github.com/opendatahub-io/agent-ops
 go 1.25.13
 
 require (
-	github.com/Gkrumbach07/openshell-dashboard/backend v0.0.0-20260916180845-978bcb5eb6b5
-	github.com/NVIDIA/OpenShell/sdk/go v0.0.0-20260910203850-90dbe5454bb8
+	github.com/Gkrumbach07/openshell-dashboard/backend v0.0.0-20260923225712-71335e5d091e
+	github.com/NVIDIA/OpenShell/sdk/go v0.0.0-20260923091534-d3480d2a7efa
 	github.com/getkin/kin-openapi v0.149.0
 	github.com/go-chi/chi v1.5.5
 	github.com/google/uuid v1.6.0
@@ -80,5 +80,3 @@ require (
 )
 
 replace github.com/opendatahub-io/odh-dashboard/pkg/tls => ../../../pkg/tls
-
-replace github.com/Gkrumbach07/openshell-dashboard/backend => github.com/d0w/openshell-dashboard/backend v0.0.0-20260921141023-113961fac55c

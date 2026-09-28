@@ -15,8 +15,9 @@ import (
 	"github.com/go-chi/chi/middleware"
 	"github.com/opendatahub-io/agent-ops/internal/config"
 	"github.com/opendatahub-io/agent-ops/internal/helpers"
-	"github.com/opendatahub-io/agent-ops/pkg/discovery"
 	"github.com/opendatahub-io/agent-ops/pkg/fleet"
+	"github.com/opendatahub-io/agent-ops/pkg/gateway"
+	discovery "github.com/opendatahub-io/agent-ops/pkg/gateway/discovery"
 	tlsprofile "github.com/opendatahub-io/odh-dashboard/pkg/tls"
 )
 
@@ -94,10 +95,14 @@ func main() {
 	// Only use for logging errors about logging configuration.
 	slog.SetDefault(logger)
 
-	fleetRegistry := fleet.NewRegistry(gatewayInstanceFactory)
+	fleetRegistry := fleet.NewRegistry(
+		gatewayInstanceFactory,
+		func(config gateway.GatewayConfig) string {
+			return config.ID
+		})
 	fleetHandler, err := fleet.NewRouter(fleetRouterPrefix, fleetRegistry)
 	if err != nil {
-		logger.Error("Unable to create fleet router", err.Error())
+		logger.Error("Unable to create fleet router", "error", err)
 		os.Exit(1)
 	}
 

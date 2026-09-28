@@ -9,7 +9,8 @@ import (
 
 	openshell "github.com/NVIDIA/OpenShell/sdk/go/openshell/v1"
 	testclients "github.com/opendatahub-io/agent-ops/internal/clients"
-	"github.com/opendatahub-io/agent-ops/pkg/fleet"
+	"github.com/opendatahub-io/agent-ops/internal/middleware"
+	"github.com/opendatahub-io/agent-ops/pkg/gateway"
 
 	openshellauth "github.com/Gkrumbach07/openshell-dashboard/backend/pkg/auth"
 	"github.com/Gkrumbach07/openshell-dashboard/backend/pkg/clients"
@@ -58,7 +59,7 @@ func embeddedFeatureFlags() openshellmodels.FeatureFlags {
 	return flags
 }
 
-func gatewayInstanceFactory(ctx context.Context, cfg fleet.GatewayConfig) (fleet.GatewayInstance, error) {
+func gatewayInstanceFactory(ctx context.Context, cfg gateway.GatewayConfig) (gateway.GatewayInstance, error) {
 	appClients, err := testclients.NewGatewayClients(
 		cfg.Endpoint,
 		// TODO: Make based on factory inputs
@@ -69,12 +70,12 @@ func gatewayInstanceFactory(ctx context.Context, cfg fleet.GatewayConfig) (fleet
 		"",
 	)
 	if err != nil {
-		return fleet.GatewayInstance{Handler: nil, Close: nil}, err
+		return gateway.GatewayInstance{Handler: nil, CloseFunc: nil}, err
 	}
 	app := openshellapi.NewApp(
 		appClients.SDK,
 		appClients.UploadExec,
-		openshellauth.New(openshellauth.Config{}),
+		middleware.NewAuthReplacerMiddleware.New(openshellauth.Config{}),
 		"",
 		// TODO: remove statics
 		openshellmodels.AuthConfigResponse{
@@ -85,8 +86,8 @@ func gatewayInstanceFactory(ctx context.Context, cfg fleet.GatewayConfig) (fleet
 		},
 	)
 	slog.Info(fmt.Sprintf("Created factory instance: %s", cfg.ID))
-	return fleet.GatewayInstance{
-		Close: func() error {
+	return gateway.GatewayInstance{
+		CloseFunc: func() error {
 			return nil
 		},
 		Handler: app.Routes(),

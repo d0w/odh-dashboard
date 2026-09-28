@@ -2,117 +2,110 @@ package fleet
 
 import (
 	"context"
+	"errors"
 	"fmt"
-	"log/slog"
 	"net/http"
 	"sync"
 )
 
-type GatewayConfig struct {
-	ID            string
-	Endpoint      string
-	GatewayCaCert string
+// Instance defines behavior required from every registry entry.
+type Instance interface {
+	http.Handler
+	Close() error
 }
 
-type GatewayInstance struct {
-	Handler http.Handler
-	Close   func() error
+// Factory creates an instance from its registry configuration.
+type Factory[Config any, Entry Instance] func(context.Context, Config) (Entry, error)
+
+// Registry dispatches requests to instances selected by a URL path key.
+type Registry[Config any, Entry Instance] struct {
+	factory Factory[Config, Entry]
+	key     func(Config) string
+
+	mu      sync.RWMutex
+	entries map[string]Entry
 }
 
-// TODO: make package-agnostic. no gateway specific stuff just registry
-// eventually change to interface to allow any object to be created
-type GatewayFactory func(context.Context, GatewayConfig) (GatewayInstance, error)
-
-type Registry interface {
-	ServeHTTP(http.ResponseWriter, *http.Request)
-	Register(context.Context, GatewayConfig) (bool, error)
-	Remove(context.Context, string) (bool, error)
-	Close(context.Context) error
-}
-
-type GatewayRegistry struct {
-	factory GatewayFactory
-
-	mu      sync.Mutex
-	entries map[string]*GatewayInstance
-}
-
-func NewRegistry(factory GatewayFactory) *GatewayRegistry {
-	return &GatewayRegistry{
+func NewRegistry[Config any, Entry Instance](
+	factory Factory[Config, Entry],
+	key func(Config) string,
+) *Registry[Config, Entry] {
+	return &Registry[Config, Entry]{
 		factory: factory,
-		entries: make(map[string]*GatewayInstance),
+		key:     key,
+		entries: make(map[string]Entry),
 	}
 }
 
-func (r *GatewayRegistry) Register(ctx context.Context, config GatewayConfig) (bool, error) {
+func (r *Registry[Config, Entry]) Register(ctx context.Context, config Config) (bool, error) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
 
-	_, exists := r.entries[config.ID]
-	if exists {
+	key := r.key(config)
+	if _, exists := r.entries[key]; exists {
 		return false, nil
 	}
 
 	instance, err := r.factory(ctx, config)
 	if err != nil {
-		return false, fmt.Errorf("create gateway %q: %w", config.ID, err)
+		return false, fmt.Errorf("create registry entry: %w", err)
 	}
 
-	r.entries[config.ID] = &instance
+	r.entries[key] = instance
 
 	return true, nil
 }
 
-func (r *GatewayRegistry) Remove(ctx context.Context, id string) (bool, error) {
+func (r *Registry[Config, Entry]) Get(key string) (Entry, bool) {
+	r.mu.RLock()
+	defer r.mu.RUnlock()
+
+	instance, exists := r.entries[key]
+	return instance, exists
+}
+
+func (r *Registry[Config, Entry]) Remove(_ context.Context, key string) (bool, error) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
 
-	_, exists := r.entries[id]
-	if exists {
-		delete(r.entries, id)
+	if _, exists := r.entries[key]; exists {
+		delete(r.entries, key)
 		return true, nil
 	}
 
 	return false, nil
 }
 
-func (r *GatewayRegistry) ServeHTTP(w http.ResponseWriter, req *http.Request) {
-	id, upstreamPath, upstreamRawPath, ok := splitGatewayPath(req.URL.Path, req.URL.EscapedPath())
-	slog.Info("HIT THE REGISTRY")
+func (r *Registry[Config, Entry]) Close(_ context.Context) error {
+	r.mu.RLock()
+	defer r.mu.RUnlock()
+
+	var closeErr error
+	// TODO: Turn into goroutine WG
+	for key, instance := range r.entries {
+		if err := instance.Close(); err != nil {
+			closeErr = errors.Join(closeErr, fmt.Errorf("close registry entry %v: %w", key, err))
+		}
+	}
+
+	return closeErr
+}
+
+func (r *Registry[Config, Entry]) ServeHTTP(w http.ResponseWriter, req *http.Request) {
+	id, upstreamPath, upstreamRawPath, ok := splitPath(req.URL.Path, req.URL.EscapedPath())
 	if !ok {
-		// return http error
 		return
 	}
-	// if !validGatewayID(id) {
-	// 	// return http error
-	// 	return
-	// }
-	fmt.Printf("%#v\n", r.entries)
 
-	gatewayInstance, ok := r.entries[id]
+	instance, ok := r.Get(id)
 	if !ok {
-		w.Write([]byte("Instance does not exist"))
+		_, _ = w.Write([]byte("Instance does not exist"))
 		return
 	}
-	fmt.Printf("%#v\n", gatewayInstance)
 
-	// clones request
-	// alter headers, auth, etc. here...
 	upstreamReq := req.Clone(req.Context())
 	upstreamReq.URL.Path = upstreamPath
 	upstreamReq.URL.RawPath = upstreamRawPath
 	upstreamReq.RequestURI = upstreamReq.URL.RequestURI()
-	gatewayInstance.Handler.ServeHTTP(w, upstreamReq)
-}
-
-func (r *GatewayRegistry) Close(ctx context.Context) error {
-	// close all gateway instances. be aware of race conditions
-	return nil
-	// errChan := make(chan error, 1)
-	// select {
-	// case <-ctx.Done():
-	// 	return nil
-	// case err := <-errChan:
-	// 	return err
-	// }
+	instance.ServeHTTP(w, upstreamReq)
 }
