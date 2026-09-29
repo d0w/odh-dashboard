@@ -24,3 +24,11 @@ func splitPath(requestPath, escapedPath string) (string, string, string, bool) {
 
 	return id, remainingPath, remainingEscapedPath, true
 }
+
+func flattenMap[Entry any](input map[string]Entry) []Entry {
+	out := []Entry{}
+	for _, val := range input {
+		out = append(out, val)
+	}
+	return out
+}

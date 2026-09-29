@@ -15,9 +15,10 @@ import (
 	"github.com/go-chi/chi/middleware"
 	"github.com/opendatahub-io/agent-ops/internal/config"
 	"github.com/opendatahub-io/agent-ops/internal/helpers"
+	kubernetesintegration "github.com/opendatahub-io/agent-ops/internal/integrations/kubernetes"
 	"github.com/opendatahub-io/agent-ops/pkg/fleet"
-	"github.com/opendatahub-io/agent-ops/pkg/gateway"
-	discovery "github.com/opendatahub-io/agent-ops/pkg/gateway/discovery"
+	gatewaydiscovery "github.com/opendatahub-io/agent-ops/services/discovery/gateway"
+
 	tlsprofile "github.com/opendatahub-io/odh-dashboard/pkg/tls"
 )
 
@@ -95,11 +96,7 @@ func main() {
 	// Only use for logging errors about logging configuration.
 	slog.SetDefault(logger)
 
-	fleetRegistry := fleet.NewRegistry(
-		gatewayInstanceFactory,
-		func(config gateway.GatewayConfig) string {
-			return config.ID
-		})
+	fleetRegistry := gatewaydiscovery.NewGatewayRegistry()
 	fleetHandler, err := fleet.NewRouter(fleetRouterPrefix, fleetRegistry)
 	if err != nil {
 		logger.Error("Unable to create fleet router", "error", err)
@@ -110,8 +107,8 @@ func main() {
 	router := chi.NewRouter()
 	router.Use(middleware.Logger)
 	router.Get("/agent-ops/api/openshell/gateways", func(w http.ResponseWriter, r *http.Request) {
-		// list gateways
-		if err := helpers.WriteJSON(w, http.StatusOK, "hello", nil); err != nil {
+		gateways := fleetRegistry.GetEntries()
+		if err := helpers.WriteJSON(w, http.StatusOK, gateways, nil); err != nil {
 			logger.Error("Failed to write JSON response",
 				slog.String("method", r.Method),
 				slog.String("path", r.URL.Path),
@@ -155,7 +152,11 @@ func main() {
 
 	// gateway discovery service
 	svcCtx, svcCancel := context.WithCancel(context.Background())
-	go discovery.PollGateways(svcCtx, fleetRegistry, 2*time.Second)
+	svcK8sClient, err := kubernetesintegration.GetKubernetesClient()
+	if err != nil {
+		panic(err.Error())
+	}
+	go gatewaydiscovery.PollGateways(svcCtx, svcK8sClient, fleetRegistry, 2*time.Second)
 
 	// Graceful shutdown setup
 	shutdownCh := make(chan os.Signal, 1)

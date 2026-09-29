@@ -1,21 +1,13 @@
 package main
 
 import (
-	"context"
-	"fmt"
 	"log/slog"
 	"os"
 	"strings"
 
 	openshell "github.com/NVIDIA/OpenShell/sdk/go/openshell/v1"
-	testclients "github.com/opendatahub-io/agent-ops/internal/clients"
-	"github.com/opendatahub-io/agent-ops/internal/middleware"
-	"github.com/opendatahub-io/agent-ops/pkg/gateway"
 
-	openshellauth "github.com/Gkrumbach07/openshell-dashboard/backend/pkg/auth"
 	"github.com/Gkrumbach07/openshell-dashboard/backend/pkg/clients"
-	openshellmodels "github.com/Gkrumbach07/openshell-dashboard/backend/pkg/models"
-	openshellapi "github.com/Gkrumbach07/openshell-dashboard/backend/pkg/server"
 )
 
 const (
@@ -39,59 +31,6 @@ func (c *gatewayClients) Close() {
 			slog.Warn("upload exec client close failed", "error", err)
 		}
 	}
-}
-
-func embeddedFeatureFlags() openshellmodels.FeatureFlags {
-	flags := openshellmodels.FeatureFlags{
-		Terminal:          true,
-		FileTransfer:      true,
-		Settings:          true,
-		GlobalPolicy:      true,
-		CredentialRefresh: true,
-		Services:          true,
-		DraftPolicy:       true,
-	}
-	// for _, name := range embeddedUnsupportedFeatures {
-	// 	if name == "terminal" {
-	// 		flags.Terminal = false
-	// 	}
-	// }
-	return flags
-}
-
-func gatewayInstanceFactory(ctx context.Context, cfg gateway.GatewayConfig) (gateway.GatewayInstance, error) {
-	appClients, err := testclients.NewGatewayClients(
-		cfg.Endpoint,
-		// TODO: Make based on factory inputs
-		cfg.GatewayCaCert,
-		// "/Users/derxu/.config/openshell/gateways/derxu-cluster/mtls/tls.crt",
-		"",
-		// "/Users/derxu/.config/openshell/gateways/derxu-cluster/mtls/tls.key",
-		"",
-	)
-	if err != nil {
-		return gateway.GatewayInstance{Handler: nil, CloseFunc: nil}, err
-	}
-	app := openshellapi.NewApp(
-		appClients.SDK,
-		appClients.UploadExec,
-		middleware.NewAuthReplacerMiddleware.New(openshellauth.Config{}),
-		"",
-		// TODO: remove statics
-		openshellmodels.AuthConfigResponse{
-			AdminRole:    "openshell-admin",
-			LogoutURL:    "",
-			Features:     embeddedFeatureFlags(),
-			AuthDisabled: false,
-		},
-	)
-	slog.Info(fmt.Sprintf("Created factory instance: %s", cfg.ID))
-	return gateway.GatewayInstance{
-		CloseFunc: func() error {
-			return nil
-		},
-		Handler: app.Routes(),
-	}, nil
 }
 
 func warnGatewayConfig(gatewayURL, gatewayCACert string, authDisabled bool) {

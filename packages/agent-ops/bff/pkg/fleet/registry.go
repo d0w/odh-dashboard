@@ -64,6 +64,13 @@ func (r *Registry[Config, Entry]) Get(key string) (Entry, bool) {
 	return instance, exists
 }
 
+func (r *Registry[Config, Entry]) GetEntries() []Entry {
+	r.mu.RLock()
+	defer r.mu.RUnlock()
+
+	return flattenMap(r.entries)
+}
+
 func (r *Registry[Config, Entry]) Remove(_ context.Context, key string) (bool, error) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
